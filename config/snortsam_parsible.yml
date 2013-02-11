@@ -1,0 +1,6 @@
+hostname: sensor_name
+mysql: 
+  username: snortsam
+  password: ''
+  host: localhost
+  database: test
