@@ -9,18 +9,23 @@ It's written in [Python](http://http://python.org/) and uses [Parsible](https://
 =========
 
 ```bash
-./snortsam_parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid
+./snortsam_parsible.py execute --log-file /var/log/mylog
 ```
 
 A log file is available at log/snortsam_parsible.log. To add debug messages regarding errors add the `--debug True` option to your command line arguments.
 
 To enable batch processing mode, just append `--batch-mode True` to your command line invocation. This can be useful for backfilling data or doing ad hoc analysis of old files.
 
+For a complete list of options:
+```bash
+./snortsam_parsible.py execute --help
+```
+
 ## Requirements
 ================
 
 * Linux
-* Python 2.7+
+* Python 2.6+
 
 
 
