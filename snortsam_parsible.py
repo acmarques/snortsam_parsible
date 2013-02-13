@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, time, os, signal, imp, argparse, logging, traceback
+import sys, time, os, signal, baker, logging, traceback
 
 class SnortsamParsible(object):
     def import_plugins(self):
@@ -64,8 +64,6 @@ class SnortsamParsible(object):
         # Keep internal references to these so we can change and refresh them properly
         self.input_file = input_file
         self.pid_file = pid_file
-        global lala
-        lala = "foda-se"
         
 
     def parsible_exit(self, status):
@@ -199,61 +197,22 @@ class SnortsamParsible(object):
         self.log_file.close()
         self.parsible_exit(0)
 
-if __name__ == '__main__':
 
-    # Just setting up command line arguments.
-    # Only thing interesting here is the defaults set for some options. You can skip this trying to get to the meat.
-    cmdline = argparse.ArgumentParser(usage="usage: snortsam_parsible.py --log-file /var/log/mylog [options]",
-                                      description="Tail a log file and filter each line to generate metrics that can be output to any desired endpoint.")
 
-    cmdline.add_argument('--log-file',
-                         '-l',
-                         action='store',
-                         help='The absolute path to the log file to be parsed, Ex: /var/log/mylog',
-                         dest='input_file',
-                         required=True
-                        )
 
-    cmdline.add_argument('--parser',
-                         '-p',
-                         action='store',
-                         help='Name of the parsing method to use, should start with "parse_", Ex: parse_nginx   If this is not set, SnortsamParsible will use the first parser found.',
-                         dest='parser',
-                         default=None
-                        )
+@baker.command(default=True)
+def execute(log_file, pid_file='/tmp/parsible.pid', parser=None, debug=False, batch_mode=False, auto_reload=False):
+  """ Snortsam Parsible arguments 
 
-    cmdline.add_argument('--pid-file',
-                         '-f',
-                         action='store',
-                         help='Absolute path to use for the PID file, Ex: /tmp/parsible.pid',
-                         dest='pid_file',
-                         default='/tmp/parsible.pid'
-                        )
+  :param log_file: The absolute path to the log file to be parsed, Ex: /var/log/mylog 
+  :param pid_file: Absolute path to use for the PID file, Ex: /tmp/parsible.pid
+  :param parser: Name of the parsing method to use, should start with "parse_", Ex: parse_nginx   If this is not set, SnortsamParsible will use the first parser found.
+  :param debug: Enable Debugging
+  :param batch_mode: If Set, SnortsamParsible will start at the top of the log file and exit once it reaches the end.  Useful for processing logs that are not realtime
+  :param auto_reload: If Set, when receiving empty lines SnortsamParsible will check if there is a discrepancy between the stored and existing file descriptors for the log file. If a discrepancy is found, SnortsamParsible will reload the new file.
 
-    cmdline.add_argument('--debug',
-                         '-d',
-                         action='store',
-                         help='Enable Debugging',
-                         dest='debug',
-                         default=False
-                        )
+  """ 
+  p = SnortsamParsible(log_file, parser, pid_file, debug, batch_mode, auto_reload)
+  p.main()
 
-    cmdline.add_argument('--batch-mode',
-                         '-b',
-                         action='store',
-                         help='If Set, SnortsamParsible will start at the top of the log file and exit once it reaches the end.  Useful for processing logs that are not realtime',
-                         dest='batch',
-                         default=False
-                        )
-
-    cmdline.add_argument('--auto-reload',
-                         '-a',
-                         action='store',
-                         help='If Set, when receiving empty lines SnortsamParsible will check if there is a discrepancy between the stored and existing file descriptors for the log file. If a discrepancy is found, SnortsamParsible will reload the new file.',
-                         dest='auto_reload',
-                         default=False
-                        )
-
-    args = cmdline.parse_args()
-    p = SnortsamParsible(args.input_file, args.parser, args.pid_file, args.debug, args.batch, args.auto_reload)
-    p.main()
+baker.run()
