@@ -1,4 +1,5 @@
 hostname: sensor_name
+output_log_file: /var/log/snortsam_parsible.log
 mysql: 
   username: snortsam
   password: ''
