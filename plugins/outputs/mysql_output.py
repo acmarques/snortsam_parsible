@@ -20,7 +20,7 @@ def output_insert_quarantine(sig_id, ip_src, ip_dest, port, duration, created_at
   _execute_command(sql)  
 
 def output_extend_quarantine(ip_src, ip_dest, port, duration, created_at, direction):  
-  sql = "update quarantines set duration=%d, created_at=%d where ip_src='%s' and ip_dst='%s' and sensor='%s' and port=%d and direction='%s" %  \
+  sql = "update quarantines set duration=%d, created_at=%d where ip_src='%s' and ip_dst='%s' and sensor='%s' and port=%d and direction='%s'" %  \
   (duration, created_at, ip_src, ip_dest, sensor, port, direction)
   
   _execute_command(sql)
