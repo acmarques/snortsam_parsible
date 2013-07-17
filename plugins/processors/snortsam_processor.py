@@ -11,12 +11,20 @@ def process_quarantine(data):
     if data["mode"] == "inbound":
       ip_src = data["host"]
       ip_dest = "0.0.0.0"
+      direction = "in"
     elif data["mode"] == "outbound": 
       ip_src = "0.0.0.0"
       ip_dest = data["host"]
+      direction = "out"
+    elif data["mode"] == "completely" or data["mode"] == "complete": 
+      ip_src = data["host"]
+      ip_dest = "0.0.0.0"
+      direction = "both"        
     elif data["mode"] == "connection":
       ip_src = data["host_src"]
       ip_dest = data["host_dest"]  
+      direction = "conn"
+    
     
     if "sig_id" in data.keys(): 
       sig_id = int(data["sig_id"])    
@@ -29,11 +37,11 @@ def process_quarantine(data):
       port = int(data["port"])
   
     if data["action"] == "block":
-      output_insert_quarantine(sig_id, ip_src, ip_dest, port, duration, created_at)
+      output_insert_quarantine(sig_id, ip_src, ip_dest, port, duration, created_at, direction)
     elif data["action"] == "extending":
-      output_extend_quarantine(ip_src, ip_dest, port, duration, created_at)      
+      output_extend_quarantine(ip_src, ip_dest, port, duration, created_at, direction)      
     else:
-      output_remove_quarantine(ip_src, ip_dest, port)      
+      output_remove_quarantine(ip_src, ip_dest, port, direction)      
   except Exception, ex:
     get_logger().exception("Unexpected error:")
   
